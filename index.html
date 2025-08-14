@@ -14,26 +14,6 @@
         <button class="toggle-btn active" onclick="showSection('media')">Media</button>
         <button class="toggle-btn" onclick="showSection('files')">Files</button>
         <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
-        <button class="toggle-btn" onclick="showSection('stations')">Stations</button>
-    </div>
-
-    <!-- Filter controls for stations -->
-    <div id="station-filters" style="display:none; margin-bottom: 1rem;">
-        <select id="region-select">
-            <option value="eu-central-1">EU</option>
-            <option value="us-east-2">NA</option>
-            <option value="ap-southeast-2">OCE</option>
-        </select>
-        <select id="fleet-select">
-            <option value="8a976a05-ca53-4946-962a-e1def410ec54">Core</option>
-            <option value="e696ee24-e6fb-45ce-a6bf-e225d15ca9b9">Rookie</option>
-            <option value="7085995a-b9d1-46de-b31b-5028d7775b6e">Clubhouse</option>
-        </select>
-        <select id="pop-select">
-            <option value="True">Include District Population</option>
-            <option value="False">No District Population</option>
-        </select>
-        <button class="toggle-btn" style="width:auto; height:auto; padding:0.5rem 1rem;" onclick="loadStations()">Load</button>
     </div>
 
     <div id="file-list">Loading files...</div>
@@ -43,10 +23,6 @@
     const repoName = "-DEV";
     const folderPath = "files";
     const container = document.getElementById("file-list");
-
-    // API details
-    const A2_API_URL = "https://a2-station-api-prod-708695367983.us-central1.run.app/v2/stations";
-    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlfaWQiOiIxNGQ5M2IzYS0yZGQzLTRhYjgtYTdkMi1iZWMyMTkwNjAxMjQiLCJrZXlfdHlwZSI6InVzZXIiLCJvd25lcl9pZCI6IjYwNTM0MTM2MDEzOTQ2ODgiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNC0yNSAwNjozMDoyOS45OTM0NDUifQ.h3vHWUjDGiKn0tk2sNIoVW6K1BD671o9pKmXwqdKiSg";
 
     // Load hosted files
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
@@ -111,8 +87,6 @@
         const buttons = document.querySelectorAll('.toggle-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
 
-        document.getElementById("station-filters").style.display = "none";
-
         if (type === 'media') {
             container.querySelectorAll('.media').forEach(el => el.style.display = '');
             container.querySelectorAll('.files').forEach(el => el.style.display = 'none');
@@ -121,58 +95,7 @@
             container.querySelectorAll('.files').forEach(el => el.style.display = '');
             container.querySelectorAll('.media').forEach(el => el.style.display = 'none');
             buttons[1].classList.add('active');
-        } else if (type === 'stations') {
-            container.innerHTML = "";
-            document.getElementById("station-filters").style.display = "block";
-            buttons[3].classList.add('active');
         }
-    }
-
-    function loadStations() {
-        container.innerHTML = "Loading stations...";
-        const region = document.getElementById("region-select").value;
-        const fleet = document.getElementById("fleet-select").value;
-        const includePop = document.getElementById("pop-select").value === "True";
-
-        fetch(A2_API_URL, {
-            headers: { "x-api-key": API_KEY }
-        })
-        .then(res => res.json())
-        .then(data => {
-            container.innerHTML = "";
-            if (!data.items) {
-                container.textContent = "API returned no data.";
-                return;
-            }
-
-            const matching = data.items.filter(station => 
-                station.fleet_id === fleet && station.region === region
-            );
-
-            if (matching.length === 0) {
-                container.textContent = "No matching stations found.";
-                return;
-            }
-
-            matching.forEach(station => {
-                const card = document.createElement("div");
-                card.className = "station-card";
-                card.innerHTML = `
-                    <h3>🚀 ${station.station_name}</h3>
-                    <p>Players: <b>${station.player_count}</b></p>
-                    <p>IP: <code>${station.ip}</code></p>
-                    <p>Online: <b>${station.online}</b></p>
-                    ${includePop && station.district_populations ? 
-                        `<div class="district-pop"><strong>District Populations:</strong><br>${Object.entries(station.district_populations).map(([dist, count]) => `> ${dist}: ${count}`).join("<br>")}</div>` 
-                        : ""}
-                `;
-                container.appendChild(card);
-            });
-        })
-        .catch(err => {
-            container.textContent = "Error loading stations.";
-            console.error(err);
-        });
     }
     </script>
 </body>
