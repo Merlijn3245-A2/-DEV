@@ -41,7 +41,7 @@ h1 {
     background: rgba(0, 0, 0, 0.6);
     position: relative;
     overflow: hidden;
-    animation: rgbGlow 3s infinite linear;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* RGB border effect */
