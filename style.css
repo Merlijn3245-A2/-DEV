@@ -28,15 +28,15 @@ h1 {
 }
 
 .toggle-btn {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
+    width: 100px;
+    height: 50px;
+    border-radius: 12px;
     border: none;
     color: white;
     font-weight: bold;
     cursor: pointer;
     backdrop-filter: blur(5px);
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.6);
     position: relative;
@@ -44,11 +44,12 @@ h1 {
     animation: rgbGlow 3s infinite linear;
 }
 
+/* RGB border effect */
 .toggle-btn::before {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: 50%;
+    border-radius: 12px;
     padding: 2px;
     background: linear-gradient(45deg, red, orange, yellow, lime, cyan, blue, magenta, red);
     background-size: 400% 400%;
