@@ -16,48 +16,71 @@ h1 {
     color: #f0f0f0;
 }
 
-/* README Container */
-#readme-container {
-    max-width: 800px;
-    margin: 0 auto 2rem auto;
-    padding: 1.5rem;
-    background: rgba(255,255,255,0.05);
+/* Floating RGB Buttons */
+.floating-buttons {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 999;
+}
+
+.toggle-btn {
+    width: 100px;
+    height: 50px;
     border-radius: 12px;
-    text-align: left;
-    color: #ddd;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     backdrop-filter: blur(5px);
-    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-#readme-container h1, 
-#readme-container h2, 
-#readme-container h3 {
-    color: #fff;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+/* RGB border effect */
+.toggle-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 2px;
+    background: linear-gradient(45deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+    background-size: 400% 400%;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: rgbBorder 4s infinite linear;
 }
 
-#readme-container p {
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
+.toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255,255,255,0.5);
 }
 
-#readme-container a {
-    color: #4dd0ff;
-    text-decoration: none;
+.toggle-btn.active {
+    background: rgba(255,255,255,0.2);
 }
 
-#readme-container a:hover {
-    text-decoration: underline;
+/* RGB Border Animation */
+@keyframes rgbBorder {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-/* File list */
 #file-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     max-width: 700px;
-    margin: 0 auto 2rem auto;
+    margin: auto;
 }
 
 .file {
@@ -78,21 +101,9 @@ h1 {
     transform: translateY(-2px);
 }
 
-/* Media container */
-#media-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    justify-content: center;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
 .embedded-media {
-    width: 300px;
-    height: 200px;
-    object-fit: cover;
+    max-width: 100%;
+    height: auto;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
 }
