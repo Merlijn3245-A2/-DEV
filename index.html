@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>📂 My Downloads🔥</h1>
+    <h1>📂 My Downloads 🔥</h1>
 
-    <!-- Tab buttons -->
-    <div id="tabs">
-        <button id="btn-media" class="tab active">Media</button>
-        <button id="btn-files" class="tab">Downloads</button>
+    <!-- Toggle Buttons -->
+    <div class="button-group">
+        <button class="toggle-btn active" onclick="showSection('all')">All</button>
+        <button class="toggle-btn" onclick="showSection('media')">Photos & Videos</button>
+        <button class="toggle-btn" onclick="showSection('files')">Files</button>
     </div>
 
     <div id="file-list">Loading files...</div>
@@ -21,92 +22,86 @@
     const repoOwner = "Merlijn3245-A2";
     const repoName = "-DEV";
     const folderPath = "files";
-
     const container = document.getElementById("file-list");
-    let mediaItems = [];
-    let fileItems = [];
 
-    // Load local files
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
       .then(res => res.json())
       .then(data => {
+        container.innerHTML = "";
         data.forEach(item => {
           if (item.type === "file") {
-            const ext = item.name.split('.').pop().toLowerCase();
-            const type = ["png","jpg","jpeg","gif","webp","mp4","webm","ogg"].includes(ext) ? "media" : "file";
-            addFile(item.name, item.download_url, false, type);
+            addFile(item.name, item.download_url);
           }
         });
         loadExternalLinks();
-        showItems("media"); // default tab
       })
-      .catch(err => {
+      .catch(() => {
         container.textContent = "Error loading files.";
         loadExternalLinks();
       });
 
-    // Load external links
     function loadExternalLinks() {
-      fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json`)
+      fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json?timestamp=${Date.now()}`)
         .then(res => res.json())
         .then(links => {
-          links.forEach(link => addFile(link.name, link.url, true, "file"));
+          links.forEach(link => {
+            addExternalLink(link.name, link.url);
+          });
         })
         .catch(() => {});
     }
 
-    // Add file or media
-    function addFile(name, url, external, type) {
-        const ext = name.split('.').pop().toLowerCase();
-        if (type === "media") {
-            let el;
-            if (["mp4","webm","ogg"].includes(ext)) {
-                el = document.createElement("video");
-                el.src = url;
-                el.controls = true;
-            } else {
-                el = document.createElement("img");
-                el.src = url;
-                el.alt = name;
-            }
-            el.className = "embedded-media";
-            mediaItems.push(el);
-        } else {
-            const a = document.createElement("a");
-            a.href = url;
-            a.className = "file";
-            if (external) {
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-            } else {
-                a.download = name;
-            }
-            a.textContent = name;
-            fileItems.push(a);
-        }
+    function addFile(name, url) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = name;
+        img.className = "embedded-media";
+        container.appendChild(img);
+      } else if (["mp4","webm","ogg","mov"].includes(ext)) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        video.className = "embedded-media";
+        container.appendChild(video);
+      } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.className = "file";
+        a.download = name;
+        a.innerHTML = `${name}`;
+        container.appendChild(a);
+      }
     }
 
-    // Show items based on tab
-    function showItems(tab) {
-        container.innerHTML = "";
-        if (tab === "media") {
-            mediaItems.forEach(item => container.appendChild(item));
-        } else {
-            fileItems.forEach(item => container.appendChild(item));
-        }
+    function addExternalLink(name, url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.className = "file";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `${name}`;
+      container.appendChild(a);
     }
 
-    // Tab buttons
-    document.getElementById("btn-media").onclick = () => {
-        showItems("media");
-        document.getElementById("btn-media").classList.add("active");
-        document.getElementById("btn-files").classList.remove("active");
-    };
-    document.getElementById("btn-files").onclick = () => {
-        showItems("files");
-        document.getElementById("btn-files").classList.add("active");
-        document.getElementById("btn-media").classList.remove("active");
-    };
+    function showSection(type) {
+        const buttons = document.querySelectorAll('.toggle-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        if (type === 'all') {
+            container.querySelectorAll('.file, .embedded-media').forEach(el => el.style.display = '');
+            buttons[0].classList.add('active');
+        } else if (type === 'media') {
+            container.querySelectorAll('.embedded-media').forEach(el => el.style.display = '');
+            container.querySelectorAll('.file').forEach(el => el.style.display = 'none');
+            buttons[1].classList.add('active');
+        } else if (type === 'files') {
+            container.querySelectorAll('.file').forEach(el => el.style.display = '');
+            container.querySelectorAll('.embedded-media').forEach(el => el.style.display = 'none');
+            buttons[2].classList.add('active');
+        }
+    }
     </script>
 </body>
 </html>
