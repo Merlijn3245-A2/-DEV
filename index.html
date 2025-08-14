@@ -12,7 +12,7 @@
 
     <script>
     const repoOwner = "Merlijn3245-A2";
-    const repoName = "-DEV"; // change if you renamed repo
+    const repoName = "-DEV";
     const folderPath = "files";
 
     const container = document.getElementById("file-list");
@@ -24,7 +24,7 @@
         container.innerHTML = "";
         data.forEach(item => {
           if (item.type === "file") {
-            addFile(item.name, item.download_url, false);
+            addFile(item.name, item.download_url);
           }
         });
         loadExternalLinks();
@@ -40,25 +40,45 @@
         .then(res => res.json())
         .then(links => {
           links.forEach(link => {
-            addFile(link.name, link.url, true);
+            addExternalLink(link.name, link.url);
           });
         })
         .catch(() => {});
     }
 
-    // Add a file or link element
-    function addFile(name, url, external) {
+    // Add local file
+    function addFile(name, url) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = name;
+        img.className = "embedded-media";
+        container.appendChild(img);
+      } else if (["mp4","webm","ogg"].includes(ext)) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        video.className = "embedded-media";
+        container.appendChild(video);
+      } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.className = "file";
+        a.download = name;
+        a.innerHTML = `${name}`;
+        container.appendChild(a);
+      }
+    }
+
+    // Add external link
+    function addExternalLink(name, url) {
       const a = document.createElement("a");
       a.href = url;
       a.className = "file";
-      if (external) {
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
- a.innerHTML = `${name}`
-      } else {
-        a.download = name;
-        a.innerHTML = `${name}`;
-      }
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `${name}`;
       container.appendChild(a);
     }
     </script>
