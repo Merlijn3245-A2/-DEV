@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Downloads</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>📂 My Downloads</h1>
+    <div id="file-list">Loading files...</div>
+
+    <script>
+    const repoOwner = "Merlijn3245-A2"; // change this
+    const repoName = "downloads"; // change if your repo is named differently
+    const folderPath = "files";
+
+    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("file-list");
+        container.innerHTML = "";
+        data.forEach(item => {
+          if (item.type === "file") {
+            const link = document.createElement("a");
+            link.href = item.download_url;
+            link.textContent = item.name;
+            link.className = "file";
+            container.appendChild(link);
+          }
+        });
+      })
+      .catch(err => {
+        document.getElementById("file-list").textContent = "Error loading files.";
+      });
+    </script>
+</body>
+</html>
