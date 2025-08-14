@@ -31,6 +31,8 @@
           if (item.type === "file") addFile(item.name, item.download_url);
         });
         loadExternalLinks();
+        // Fix: show only media on initial load
+        showSection('media');
       })
       .catch(() => {
         container.textContent = "Error loading files.";
