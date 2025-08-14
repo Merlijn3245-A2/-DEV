@@ -1,19 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
-body {
-    font-family: 'Inter', sans-serif;
-    background: radial-gradient(circle at top, #1a1a1a, #000000);
-    color: white;
-    text-align: center;
-    padding: 2rem;
-    min-height: 100vh;
+#tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
-h1 {
-    font-size: 2.2rem;
-    margin-bottom: 2rem;
-    font-weight: 600;
-    color: #f0f0f0;
+.tab {
+    padding: 0.5rem 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    color: white;
+    transition: background 0.2s ease;
+}
+
+.tab:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.tab.active {
+    background: rgba(255,255,255,0.2);
 }
 
 #file-list {
@@ -24,27 +31,15 @@ h1 {
     margin: auto;
 }
 
-.file {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0.5rem;
-    text-decoration: none;
-    color: white;
-    transition: background 0.2s ease, transform 0.1s ease;
-    backdrop-filter: blur(5px);
-}
-
-.file:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-}
-
-.embedded-media {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+/* Optional: media grid for nicer layout */
+@media (min-width: 600px) {
+    #file-list img.embedded-media,
+    #file-list video.embedded-media {
+        max-width: 48%;
+        margin-bottom: 1rem;
+    }
+    #file-list {
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
 }
