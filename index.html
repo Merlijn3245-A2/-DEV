@@ -13,7 +13,7 @@
     <div class="floating-buttons">
         <button class="toggle-btn active" onclick="showSection('media')">Media</button>
         <button class="toggle-btn" onclick="showSection('files')">Files</button>
-        <button class="toggle-btn" onclick="showDocs()">Docs</button>
+        <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
     </div>
 
     <div id="file-list">Loading files...</div>
@@ -95,15 +95,6 @@
             container.querySelectorAll('.media').forEach(el => el.style.display = 'none');
             buttons[1].classList.add('active');
         }
-    }
-
-    function showDocs() {
-        const buttons = document.querySelectorAll('.toggle-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        buttons[2].classList.add('active');
-
-        // Navigate to the docs folder
-        window.location.href = './docs/index.html';
     }
     </script>
 </body>
