@@ -12,27 +12,55 @@
 
     <script>
     const repoOwner = "Merlijn3245-A2";
-    const repoName = "-DEV"; // keep as is unless you rename
+    const repoName = "-DEV"; // change if you renamed repo
     const folderPath = "files";
 
+    const container = document.getElementById("file-list");
+
+    // Load local files from GitHub repo
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
       .then(res => res.json())
       .then(data => {
-        const container = document.getElementById("file-list");
         container.innerHTML = "";
         data.forEach(item => {
           if (item.type === "file") {
-            const link = document.createElement("a");
-            link.href = item.download_url;
-            link.textContent = item.name;
-            link.className = "file";
-            container.appendChild(link);
+            addFile(item.name, item.download_url, false);
           }
         });
+        loadExternalLinks();
       })
       .catch(err => {
-        document.getElementById("file-list").textContent = "Error loading files.";
+        container.textContent = "Error loading files.";
+        loadExternalLinks();
       });
+
+    // Load external links from links.json
+    function loadExternalLinks() {
+      fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json`)
+        .then(res => res.json())
+        .then(links => {
+          links.forEach(link => {
+            addFile(link.name, link.url, true);
+          });
+        })
+        .catch(() => {});
+    }
+
+    // Add a file or link element
+    function addFile(name, url, external) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.className = "file";
+      if (external) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.innerHTML = `${name} <span>External Link</span>`;
+      } else {
+        a.download = name;
+        a.innerHTML = `${name}`;
+      }
+      container.appendChild(a);
+    }
     </script>
 </body>
 </html>
