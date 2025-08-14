@@ -1,109 +1,111 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Downloads</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>📂 My Downloads 🔥</h1>
 
-body {
-    font-family: 'Inter', sans-serif;
-    background: radial-gradient(circle at top, #1a1a1a, #000000);
-    color: white;
-    text-align: center;
-    padding: 2rem;
-    min-height: 100vh;
-}
+    <!-- README Container -->
+    <div id="readme-container">Loading README...</div>
 
-h1 {
-    font-size: 2.2rem;
-    margin-bottom: 2rem;
-    font-weight: 600;
-    color: #f0f0f0;
-}
+    <!-- Floating RGB Buttons -->
+    <div class="floating-buttons">
+        <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
+    </div>
 
-/* Floating RGB Buttons */
-.floating-buttons {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    z-index: 999;
-}
+    <!-- Files first, then media -->
+    <div id="file-section">
+        <h2>📄 Files</h2>
+        <div id="file-list">Loading files...</div>
+    </div>
 
-.toggle-btn {
-    width: 100px;
-    height: 50px;
-    border-radius: 12px;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    background: rgba(0, 0, 0, 0.6);
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+    <div id="media-section">
+        <h2>🎥 Media</h2>
+        <div id="media-list"></div>
+    </div>
 
-/* RGB border effect */
-.toggle-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    padding: 2px;
-    background: linear-gradient(45deg, red, orange, yellow, lime, cyan, blue, magenta, red);
-    background-size: 400% 400%;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    animation: rgbBorder 4s infinite linear;
-}
+    <script>
+    const repoOwner = "Merlijn3245-A2";
+    const repoName = "-DEV";
+    const folderPath = "files";
 
-.toggle-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-}
+    const fileContainer = document.getElementById("file-list");
+    const mediaContainer = document.getElementById("media-list");
+    const readmeContainer = document.getElementById("readme-container");
 
-.toggle-btn.active {
-    background: rgba(255,255,255,0.2);
-}
+    // Load README
+    fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/README.md`)
+        .then(res => res.text())
+        .then(md => {
+            readmeContainer.innerHTML = marked.parse(md);
+        })
+        .catch(() => {
+            readmeContainer.textContent = "Error loading README.";
+        });
 
-/* RGB Border Animation */
-@keyframes rgbBorder {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+    // Load files
+    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
+      .then(res => res.json())
+      .then(data => {
+        fileContainer.innerHTML = "";
+        mediaContainer.innerHTML = "";
+        data.forEach(item => {
+          if (item.type === "file") addFile(item.name, item.download_url);
+        });
+        loadExternalLinks();
+      })
+      .catch(() => {
+        fileContainer.textContent = "Error loading files.";
+        loadExternalLinks();
+      });
 
-#file-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 700px;
-    margin: auto;
-}
+    function loadExternalLinks() {
+      fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json?timestamp=${Date.now()}`)
+        .then(res => res.json())
+        .then(links => {
+          links.forEach(link => addExternalLink(link.name, link.url));
+        })
+        .catch(() => {});
+    }
 
-.file {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0.5rem;
-    text-decoration: none;
-    color: white;
-    transition: background 0.2s ease, transform 0.1s ease;
-    backdrop-filter: blur(5px);
-}
+    function addFile(name, url) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = name;
+        img.className = "embedded-media";
+        mediaContainer.appendChild(img);
+      } else if (["mp4","webm","ogg","mov"].includes(ext)) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        video.className = "embedded-media";
+        mediaContainer.appendChild(video);
+      } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.className = "file";
+        a.download = name;
+        a.innerHTML = `${name}`;
+        fileContainer.appendChild(a);
+      }
+    }
 
-.file:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-}
-
-.embedded-media {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(255,255,255,0.2);
-}
+    function addExternalLink(name, url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.className = "file";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `${name}`;
+      fileContainer.appendChild(a);
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
