@@ -12,13 +12,24 @@
         Loading README...
     </div>
 
-    <div id="file-list">Loading files...</div>
+    <div id="downloads-container">
+        <div id="files-section">
+            <h2>Files</h2>
+            <div id="file-list">Loading files...</div>
+        </div>
+        <div id="media-section">
+            <h2>Media</h2>
+            <div id="media-list"></div>
+        </div>
+    </div>
 
     <script>
     const repoOwner = "Merlijn3245-A2";
     const repoName = "-DEV";
     const folderPath = "files";
-    const container = document.getElementById("file-list");
+
+    const fileListContainer = document.getElementById("file-list");
+    const mediaListContainer = document.getElementById("media-list");
 
     // Load README from GitHub
     fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/README.md`)
@@ -41,20 +52,26 @@
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
       .then(res => res.json())
       .then(data => {
-        container.innerHTML = "";
+        fileListContainer.innerHTML = "";
+        mediaListContainer.innerHTML = "";
 
-        // Files first
-        const files = data.filter(item => item.type === "file" && !["png","jpg","jpeg","gif","webp","mp4","webm","ogg","mov"].includes(item.name.split('.').pop().toLowerCase()));
-        files.forEach(item => addFile(item.name, item.download_url));
+        data.forEach(item => {
+          if (item.type !== "file") return;
 
-        // Media next
-        const media = data.filter(item => item.type === "file" && ["png","jpg","jpeg","gif","webp","mp4","webm","ogg","mov"].includes(item.name.split('.').pop().toLowerCase()));
-        media.forEach(item => addFile(item.name, item.download_url));
+          const ext = item.name.split('.').pop().toLowerCase();
+          const isMedia = ["png","jpg","jpeg","gif","webp","mp4","webm","ogg","mov"].includes(ext);
+
+          if (isMedia) {
+            addMedia(item.name, item.download_url);
+          } else {
+            addFile(item.name, item.download_url);
+          }
+        });
 
         loadExternalLinks();
       })
       .catch(() => {
-        container.textContent = "Error loading files.";
+        fileListContainer.textContent = "Error loading files.";
         loadExternalLinks();
       });
 
@@ -62,43 +79,40 @@
       fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json?timestamp=${Date.now()}`)
         .then(res => res.json())
         .then(links => {
-          links.forEach(link => addExternalLink(link.name, link.url));
+          links.forEach(link => addFile(link.name, link.url, true));
         })
         .catch(() => {});
     }
 
-    function addFile(name, url) {
+    function addFile(name, url, isLink = false) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.className = "file";
+      if (isLink) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      } else {
+        a.download = name;
+      }
+      a.innerHTML = name;
+      fileListContainer.appendChild(a);
+    }
+
+    function addMedia(name, url) {
       const ext = name.split('.').pop().toLowerCase();
       if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
         const img = document.createElement("img");
         img.src = url;
         img.alt = name;
-        img.className = "embedded-media media";
-        container.appendChild(img);
-      } else if (["mp4","webm","ogg","mov"].includes(ext)) {
+        img.className = "embedded-media";
+        mediaListContainer.appendChild(img);
+      } else {
         const video = document.createElement("video");
         video.src = url;
         video.controls = true;
-        video.className = "embedded-media media";
-        container.appendChild(video);
-      } else {
-        const a = document.createElement("a");
-        a.href = url;
-        a.className = "file files";
-        a.download = name;
-        a.innerHTML = `${name}`;
-        container.appendChild(a);
+        video.className = "embedded-media";
+        mediaListContainer.appendChild(video);
       }
-    }
-
-    function addExternalLink(name, url) {
-      const a = document.createElement("a");
-      a.href = url;
-      a.className = "file files";
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.innerHTML = `${name}`;
-      container.appendChild(a);
     }
     </script>
 </body>
