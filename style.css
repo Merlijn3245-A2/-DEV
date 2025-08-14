@@ -1,111 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Downloads</title>
-    <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-    <h1>📂 My Downloads 🔥</h1>
+/* README Container */
+#readme-container {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    text-align: left;
+    color: #ddd;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+#readme-container h1, 
+#readme-container h2, 
+#readme-container h3 {
+    color: #fff;
+}
 
-    <!-- README Container -->
-    <div id="readme-container">Loading README...</div>
+/* Section spacing */
+#file-section, #media-section {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    padding: 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+}
+#file-section h2, #media-section h2 {
+    color: #4dd0ff;
+    margin-bottom: 1rem;
+}
 
-    <!-- Floating RGB Buttons -->
-    <div class="floating-buttons">
-        <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
-    </div>
+/* Keep files styled */
+.file {
+    display: block;
+    padding: 1rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+.file:hover {
+    background: rgba(255,255,255,0.15);
+}
 
-    <!-- Files first, then media -->
-    <div id="file-section">
-        <h2>📄 Files</h2>
-        <div id="file-list">Loading files...</div>
-    </div>
-
-    <div id="media-section">
-        <h2>🎥 Media</h2>
-        <div id="media-list"></div>
-    </div>
-
-    <script>
-    const repoOwner = "Merlijn3245-A2";
-    const repoName = "-DEV";
-    const folderPath = "files";
-
-    const fileContainer = document.getElementById("file-list");
-    const mediaContainer = document.getElementById("media-list");
-    const readmeContainer = document.getElementById("readme-container");
-
-    // Load README
-    fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/README.md`)
-        .then(res => res.text())
-        .then(md => {
-            readmeContainer.innerHTML = marked.parse(md);
-        })
-        .catch(() => {
-            readmeContainer.textContent = "Error loading README.";
-        });
-
-    // Load files
-    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
-      .then(res => res.json())
-      .then(data => {
-        fileContainer.innerHTML = "";
-        mediaContainer.innerHTML = "";
-        data.forEach(item => {
-          if (item.type === "file") addFile(item.name, item.download_url);
-        });
-        loadExternalLinks();
-      })
-      .catch(() => {
-        fileContainer.textContent = "Error loading files.";
-        loadExternalLinks();
-      });
-
-    function loadExternalLinks() {
-      fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json?timestamp=${Date.now()}`)
-        .then(res => res.json())
-        .then(links => {
-          links.forEach(link => addExternalLink(link.name, link.url));
-        })
-        .catch(() => {});
-    }
-
-    function addFile(name, url) {
-      const ext = name.split('.').pop().toLowerCase();
-      if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
-        const img = document.createElement("img");
-        img.src = url;
-        img.alt = name;
-        img.className = "embedded-media";
-        mediaContainer.appendChild(img);
-      } else if (["mp4","webm","ogg","mov"].includes(ext)) {
-        const video = document.createElement("video");
-        video.src = url;
-        video.controls = true;
-        video.className = "embedded-media";
-        mediaContainer.appendChild(video);
-      } else {
-        const a = document.createElement("a");
-        a.href = url;
-        a.className = "file";
-        a.download = name;
-        a.innerHTML = `${name}`;
-        fileContainer.appendChild(a);
-      }
-    }
-
-    function addExternalLink(name, url) {
-      const a = document.createElement("a");
-      a.href = url;
-      a.className = "file";
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.innerHTML = `${name}`;
-      fileContainer.appendChild(a);
-    }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</body>
-</html>
+/* Keep media consistent size */
+.embedded-media {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    margin: 0 auto 1rem auto;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
