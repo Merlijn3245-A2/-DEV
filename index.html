@@ -12,6 +12,9 @@
     <!-- README Content -->
     <div id="readme-container">Loading README...</div>
 
+    <!-- Pinned File Links -->
+    <div id="pinned-file-list" class="pinned-files">Loading files...</div>
+
     <!-- Floating RGB Buttons -->
     <div class="floating-buttons">
         <button class="toggle-btn active" onclick="showSection('media')">Media</button>
@@ -19,15 +22,17 @@
         <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
     </div>
 
-    <div id="file-list">Loading files...</div>
+    <!-- Media Section -->
+    <div id="media-list"></div>
 
     <script>
     const repoOwner = "Merlijn3245-A2";
     const repoName = "-DEV";
     const folderPath = "files";
-    const container = document.getElementById("file-list");
+    const pinnedContainer = document.getElementById("pinned-file-list");
+    const mediaContainer = document.getElementById("media-list");
 
-    // Load README.md and render it
+    // Load README.md
     fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/README.md`)
       .then(res => res.text())
       .then(markdown => {
@@ -37,11 +42,12 @@
         document.getElementById("readme-container").textContent = "README could not be loaded.";
       });
 
-    // Load hosted files
+    // Load files
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
       .then(res => res.json())
       .then(data => {
-        container.innerHTML = "";
+        pinnedContainer.innerHTML = "";
+        mediaContainer.innerHTML = "";
         data.forEach(item => {
           if (item.type === "file") addFile(item.name, item.download_url);
         });
@@ -49,7 +55,7 @@
         showSection('media');
       })
       .catch(() => {
-        container.textContent = "Error loading files.";
+        pinnedContainer.textContent = "Error loading files.";
         loadExternalLinks();
       });
 
@@ -64,36 +70,48 @@
 
     function addFile(name, url) {
       const ext = name.split('.').pop().toLowerCase();
+      if (["png","jpg","jpeg","gif","webp","mp4","webm","ogg","mov"].includes(ext)) {
+        const mediaEl = createMediaElement(name, url, ext);
+        mediaContainer.appendChild(mediaEl);
+      } else {
+        const linkEl = createFileLink(name, url);
+        pinnedContainer.appendChild(linkEl);
+      }
+    }
+
+    function addExternalLink(name, url) {
+      const linkEl = createFileLink(name, url, true);
+      pinnedContainer.appendChild(linkEl);
+    }
+
+    function createMediaElement(name, url, ext) {
       if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
         const img = document.createElement("img");
         img.src = url;
         img.alt = name;
         img.className = "embedded-media media";
-        container.appendChild(img);
-      } else if (["mp4","webm","ogg","mov"].includes(ext)) {
+        return img;
+      } else {
         const video = document.createElement("video");
         video.src = url;
         video.controls = true;
         video.className = "embedded-media media";
-        container.appendChild(video);
-      } else {
-        const a = document.createElement("a");
-        a.href = url;
-        a.className = "file files";
-        a.download = name;
-        a.innerHTML = `${name}`;
-        container.appendChild(a);
+        return video;
       }
     }
 
-    function addExternalLink(name, url) {
+    function createFileLink(name, url, external = false) {
       const a = document.createElement("a");
       a.href = url;
       a.className = "file files";
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
+      if (external) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      } else {
+        a.download = name;
+      }
       a.innerHTML = `${name}`;
-      container.appendChild(a);
+      return a;
     }
 
     function showSection(type) {
@@ -101,12 +119,12 @@
         buttons.forEach(btn => btn.classList.remove('active'));
 
         if (type === 'media') {
-            container.querySelectorAll('.media').forEach(el => el.style.display = '');
-            container.querySelectorAll('.files').forEach(el => el.style.display = 'none');
+            mediaContainer.style.display = '';
+            pinnedContainer.style.display = '';
             buttons[0].classList.add('active');
         } else if (type === 'files') {
-            container.querySelectorAll('.files').forEach(el => el.style.display = '');
-            container.querySelectorAll('.media').forEach(el => el.style.display = 'none');
+            mediaContainer.style.display = 'none';
+            pinnedContainer.style.display = '';
             buttons[1].classList.add('active');
         }
     }
