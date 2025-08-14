@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #181818;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+#file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 400px;
+    margin: auto;
+}
+
+.file {
+    display: block;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: white;
+    transition: background 0.2s;
+}
+
+.file:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
