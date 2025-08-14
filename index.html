@@ -1,78 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repo Viewer</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Downloads</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1 id="repo-title">Repository Viewer</h1>
+    <h1>📂 My Downloads 🔥</h1>
 
-    <!-- README -->
-    <div id="readme-container">Loading README...</div>
+    <!-- Floating RGB Buttons -->
+    <div class="floating-buttons">
+        <button class="toggle-btn active" onclick="showSection('media')">Media</button>
+        <button class="toggle-btn" onclick="showSection('files')">Files</button>
+        <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
+    </div>
 
-    <!-- FILE LIST -->
     <div id="file-list">Loading files...</div>
 
-    <!-- MEDIA -->
-    <div id="media-container">Loading media...</div>
-
     <script>
-        const repoOwner = "YOUR_GITHUB_USERNAME";
-        const repoName = "YOUR_REPO_NAME";
-        const branch = "main";
+    const repoOwner = "Merlijn3245-A2";
+    const repoName = "-DEV";
+    const folderPath = "files";
+    const container = document.getElementById("file-list");
 
-        // Fetch README
-        fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/README.md`)
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById("readme-container").innerHTML = marked.parse(data);
-            })
-            .catch(() => {
-                document.getElementById("readme-container").textContent = "No README found.";
-            });
+    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
+      .then(res => res.json())
+      .then(data => {
+        container.innerHTML = "";
+        data.forEach(item => {
+          if (item.type === "file") addFile(item.name, item.download_url);
+        });
+        loadExternalLinks();
+        showSection('media');
+      })
+      .catch(() => {
+        container.textContent = "Error loading files.";
+        loadExternalLinks();
+      });
 
-        // Fetch repo contents
-        fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents`)
-            .then(res => res.json())
-            .then(files => {
-                const fileList = document.getElementById("file-list");
-                const mediaContainer = document.getElementById("media-container");
-                fileList.innerHTML = "";
-                mediaContainer.innerHTML = "";
+    function loadExternalLinks() {
+      fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json?timestamp=${Date.now()}`)
+        .then(res => res.json())
+        .then(links => {
+          links.forEach(link => addExternalLink(link.name, link.url));
+        })
+        .catch(() => {});
+    }
 
-                files.forEach(file => {
-                    const ext = file.name.split('.').pop().toLowerCase();
+    function addFile(name, url) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = name;
+        img.className = "embedded-media media";
+        container.appendChild(img);
+      } else if (["mp4","webm","ogg","mov"].includes(ext)) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        video.className = "embedded-media media";
+        container.appendChild(video);
+      } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.className = "file files";
+        a.download = name;
+        a.innerHTML = `${name}`;
+        container.appendChild(a);
+      }
+    }
 
-                    // Display files (non-media) in file list
-                    if (!["png", "jpg", "jpeg", "gif", "mp4", "webm", "mov"].includes(ext)) {
-                        const link = document.createElement("a");
-                        link.href = file.download_url;
-                        link.textContent = file.name;
-                        link.className = "file";
-                        link.target = "_blank";
-                        fileList.appendChild(link);
-                    }
+    function addExternalLink(name, url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.className = "file files";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `${name}`;
+      container.appendChild(a);
+    }
 
-                    // Display media in media container
-                    else {
-                        if (["png", "jpg", "jpeg", "gif"].includes(ext)) {
-                            const img = document.createElement("img");
-                            img.src = file.download_url;
-                            img.className = "embedded-media";
-                            mediaContainer.appendChild(img);
-                        } else if (["mp4", "webm", "mov"].includes(ext)) {
-                            const video = document.createElement("video");
-                            video.src = file.download_url;
-                            video.controls = true;
-                            video.className = "embedded-media";
-                            mediaContainer.appendChild(video);
-                        }
-                    }
-                });
-            });
+    function showSection(type) {
+        const buttons = document.querySelectorAll('.toggle-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        if (type === 'media') {
+            container.querySelectorAll('.media').forEach(el => el.style.display = '');
+            container.querySelectorAll('.files').forEach(el => el.style.display = 'none');
+            buttons[0].classList.add('active');
+        } else if (type === 'files') {
+            container.querySelectorAll('.files').forEach(el => el.style.display = '');
+            container.querySelectorAll('.media').forEach(el => el.style.display = 'none');
+            buttons[1].classList.add('active');
+        }
+    }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
