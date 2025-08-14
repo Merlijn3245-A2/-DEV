@@ -17,7 +17,7 @@
 
     const container = document.getElementById("file-list");
 
-    // Load local files from GitHub repo
+ 
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
       .then(res => res.json())
       .then(data => {
@@ -34,7 +34,7 @@
         loadExternalLinks();
       });
 
-    // Load external links from links.json
+
     function loadExternalLinks() {
       fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json`)
         .then(res => res.json())
@@ -46,7 +46,7 @@
         .catch(() => {});
     }
 
-    // Add local file
+
     function addFile(name, url) {
       const ext = name.split('.').pop().toLowerCase();
       if (["png","jpg","jpeg","gif","webp"].includes(ext)) {
@@ -71,7 +71,7 @@
       }
     }
 
-    // Add external link
+  
     function addExternalLink(name, url) {
       const a = document.createElement("a");
       a.href = url;
