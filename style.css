@@ -51,6 +51,37 @@ h1 {
     text-decoration: underline;
 }
 
+/* 📌 Pinned Links Section */
+#pinned-links {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    padding: 1rem;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+#pinned-links a {
+    padding: 0.5rem 1rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+#pinned-links a:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+}
+
 /* Floating RGB Buttons */
 .floating-buttons {
     position: fixed;
