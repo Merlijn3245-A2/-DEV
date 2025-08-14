@@ -16,6 +16,41 @@ h1 {
     color: #f0f0f0;
 }
 
+/* README Container */
+#readme-container {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    text-align: left;
+    color: #ddd;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+#readme-container h1, 
+#readme-container h2, 
+#readme-container h3 {
+    color: #fff;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#readme-container p {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+#readme-container a {
+    color: #4dd0ff;
+    text-decoration: none;
+}
+
+#readme-container a:hover {
+    text-decoration: underline;
+}
+
 /* Floating RGB Buttons */
 .floating-buttons {
     position: fixed;
