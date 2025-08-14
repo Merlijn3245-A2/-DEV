@@ -9,6 +9,9 @@
 <body>
     <h1>📂 My Downloads 🔥</h1>
 
+    <!-- README Content -->
+    <div id="readme-container">Loading README...</div>
+
     <!-- Floating RGB Buttons -->
     <div class="floating-buttons">
         <button class="toggle-btn active" onclick="showSection('media')">Media</button>
@@ -23,6 +26,16 @@
     const repoName = "-DEV";
     const folderPath = "files";
     const container = document.getElementById("file-list");
+
+    // Load README.md and render it
+    fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/README.md`)
+      .then(res => res.text())
+      .then(markdown => {
+        document.getElementById("readme-container").innerHTML = marked.parse(markdown);
+      })
+      .catch(() => {
+        document.getElementById("readme-container").textContent = "README could not be loaded.";
+      });
 
     // Load hosted files
     fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
@@ -98,5 +111,8 @@
         }
     }
     </script>
+
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
