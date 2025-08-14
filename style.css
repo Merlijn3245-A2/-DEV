@@ -69,7 +69,15 @@ body {
 }
 
 /* Media */
+#media-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
 .embedded-media {
+    width: 320px; /* uniform width for all media */
     max-width: 100%;
     height: auto;
     border-radius: 10px;
