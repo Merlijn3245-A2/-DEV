@@ -12,13 +12,6 @@
         Loading README...
     </div>
 
-    <!-- Floating RGB Buttons -->
-    <div class="floating-buttons">
-        <button class="toggle-btn active" onclick="showSection('files')">Files</button>
-        <button class="toggle-btn" onclick="showSection('media')">Media</button>
-        <button class="toggle-btn" onclick="window.location.href='docs/index.html'">Docs</button>
-    </div>
-
     <div id="file-list">Loading files...</div>
 
     <script>
@@ -49,11 +42,16 @@
       .then(res => res.json())
       .then(data => {
         container.innerHTML = "";
-        data.forEach(item => {
-          if (item.type === "file") addFile(item.name, item.download_url);
-        });
+
+        // Files first
+        const files = data.filter(item => item.type === "file" && !["png","jpg","jpeg","gif","webp","mp4","webm","ogg","mov"].includes(item.name.split('.').pop().toLowerCase()));
+        files.forEach(item => addFile(item.name, item.download_url));
+
+        // Media next
+        const media = data.filter(item => item.type === "file" && ["png","jpg","jpeg","gif","webp","mp4","webm","ogg","mov"].includes(item.name.split('.').pop().toLowerCase()));
+        media.forEach(item => addFile(item.name, item.download_url));
+
         loadExternalLinks();
-        showSection('files'); // Default to files on top
       })
       .catch(() => {
         container.textContent = "Error loading files.";
@@ -101,21 +99,6 @@
       a.rel = "noopener noreferrer";
       a.innerHTML = `${name}`;
       container.appendChild(a);
-    }
-
-    function showSection(type) {
-        const buttons = document.querySelectorAll('.toggle-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-
-        if (type === 'media') {
-            container.querySelectorAll('.media').forEach(el => el.style.display = '');
-            container.querySelectorAll('.files').forEach(el => el.style.display = 'none');
-            buttons[1].classList.add('active');
-        } else if (type === 'files') {
-            container.querySelectorAll('.files').forEach(el => el.style.display = '');
-            container.querySelectorAll('.media').forEach(el => el.style.display = 'none');
-            buttons[0].classList.add('active');
-        }
     }
     </script>
 </body>
