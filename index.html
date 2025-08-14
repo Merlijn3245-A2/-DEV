@@ -9,10 +9,9 @@
 <body>
     <h1>📂 My Downloads 🔥</h1>
 
-    <!-- Toggle Buttons -->
-    <div class="button-group">
-        <button class="toggle-btn active" onclick="showSection('all')">All</button>
-        <button class="toggle-btn" onclick="showSection('media')">Photos & Videos</button>
+    <!-- Floating Buttons -->
+    <div class="floating-buttons">
+        <button class="toggle-btn active" onclick="showSection('media')">Media</button>
         <button class="toggle-btn" onclick="showSection('files')">Files</button>
     </div>
 
@@ -29,9 +28,7 @@
       .then(data => {
         container.innerHTML = "";
         data.forEach(item => {
-          if (item.type === "file") {
-            addFile(item.name, item.download_url);
-          }
+          if (item.type === "file") addFile(item.name, item.download_url);
         });
         loadExternalLinks();
       })
@@ -44,9 +41,7 @@
       fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/links.json?timestamp=${Date.now()}`)
         .then(res => res.json())
         .then(links => {
-          links.forEach(link => {
-            addExternalLink(link.name, link.url);
-          });
+          links.forEach(link => addExternalLink(link.name, link.url));
         })
         .catch(() => {});
     }
@@ -57,18 +52,18 @@
         const img = document.createElement("img");
         img.src = url;
         img.alt = name;
-        img.className = "embedded-media";
+        img.className = "embedded-media media";
         container.appendChild(img);
       } else if (["mp4","webm","ogg","mov"].includes(ext)) {
         const video = document.createElement("video");
         video.src = url;
         video.controls = true;
-        video.className = "embedded-media";
+        video.className = "embedded-media media";
         container.appendChild(video);
       } else {
         const a = document.createElement("a");
         a.href = url;
-        a.className = "file";
+        a.className = "file files";
         a.download = name;
         a.innerHTML = `${name}`;
         container.appendChild(a);
@@ -78,7 +73,7 @@
     function addExternalLink(name, url) {
       const a = document.createElement("a");
       a.href = url;
-      a.className = "file";
+      a.className = "file files";
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.innerHTML = `${name}`;
@@ -89,17 +84,14 @@
         const buttons = document.querySelectorAll('.toggle-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
 
-        if (type === 'all') {
-            container.querySelectorAll('.file, .embedded-media').forEach(el => el.style.display = '');
+        if (type === 'media') {
+            container.querySelectorAll('.media').forEach(el => el.style.display = '');
+            container.querySelectorAll('.files').forEach(el => el.style.display = 'none');
             buttons[0].classList.add('active');
-        } else if (type === 'media') {
-            container.querySelectorAll('.embedded-media').forEach(el => el.style.display = '');
-            container.querySelectorAll('.file').forEach(el => el.style.display = 'none');
-            buttons[1].classList.add('active');
         } else if (type === 'files') {
-            container.querySelectorAll('.file').forEach(el => el.style.display = '');
-            container.querySelectorAll('.embedded-media').forEach(el => el.style.display = 'none');
-            buttons[2].classList.add('active');
+            container.querySelectorAll('.files').forEach(el => el.style.display = '');
+            container.querySelectorAll('.media').forEach(el => el.style.display = 'none');
+            buttons[1].classList.add('active');
         }
     }
     </script>
