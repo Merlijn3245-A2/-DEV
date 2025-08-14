@@ -27,63 +27,6 @@ body {
     color: #fff;
 }
 
-/* Floating RGB Buttons */
-.floating-buttons {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    z-index: 999;
-}
-
-.toggle-btn {
-    width: 100px;
-    height: 50px;
-    border-radius: 12px;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    background: rgba(0, 0, 0, 0.6);
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.toggle-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    padding: 2px;
-    background: linear-gradient(45deg, red, orange, yellow, lime, cyan, blue, magenta, red);
-    background-size: 400% 400%;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    animation: rgbBorder 4s infinite linear;
-}
-
-.toggle-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-}
-
-.toggle-btn.active {
-    background: rgba(255,255,255,0.2);
-}
-
-@keyframes rgbBorder {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 #file-list {
     display: flex;
     flex-direction: column;
