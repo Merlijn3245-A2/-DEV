@@ -1,2 +1,3 @@
 # Hello, this is my personal site.
-add me on discord: merlijnod 
+Join my dc: https://discord.gg/cRu4Rm64
+add me on dc: a2_leaker
